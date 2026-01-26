@@ -182,18 +182,19 @@ def covariance_loss(skip_list, lambda_cov=0.1, eps=1e-3):
     num_layers = len(skip_list) - 1
     for x in skip_list[1:]:
         B, C, D = x.shape
-        x_reshaped = x.reshape(B * C, D)
+        # Compute covariance across channels (C) using B * D samples.
+        x_reshaped = x.permute(0, 2, 1).reshape(B * D, C)
         x_centered = (x_reshaped - x_reshaped.mean(dim=0, keepdim=True)) / (
             x_reshaped.std(dim=0, keepdim=True) + eps
         )
-        cov = (x_centered.T @ x_centered) / (B * C - 1)
-        cov = cov + eps * torch.eye(D, device=x.device, dtype=x.dtype)
+        cov = (x_centered.T @ x_centered) / (B * D - 1)
+        cov = cov + eps * torch.eye(C, device=x.device, dtype=x.dtype)
 
         sign, logdet = torch.linalg.slogdet(cov)
         if sign <= 0:
             loss = torch.tensor(0.0, device=cov.device, dtype=cov.dtype)
         else:
-            loss = -logdet / D
+            loss = -logdet / C
 
         total_loss += loss
 

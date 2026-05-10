@@ -1,0 +1,67 @@
+# CycleNet configs — cycle_len chosen per data periodicity.
+#   Daily-resolution data (CalGeo AQ/Solar/Weather): cycle_len=7 (weekly cycle)
+#   Weekly Mobility-CA: cycle_len=4 (monthly) or 52 (yearly) — start with 4
+
+_default: &default
+  train_epochs: 50
+  patience: 10
+  learning_rate: 0.0001
+  batch_size: 32
+  d_model: 512  # for cyclenet_type='mlp'; ignored for 'linear'
+  cyclenet_type: 'linear'  # linear | mlp
+  use_revin: true
+  lradj: cosine
+
+# CalGeo (daily, seq=14 pred=14, cycle=7 weekly)
+_calgeo_default: &calgeo_default
+  <<: *default
+  seq_len: 14
+  pred_len: 14
+  freq: 'D'
+  cycle_len: 7
+
+CalGeo-AirQuality-pm25:
+  <<: *calgeo_default
+  enc_in: 84
+CalGeo-AirQuality-ozone:
+  <<: *calgeo_default
+  enc_in: 156
+CalGeo-Solar-ghi:
+  <<: *calgeo_default
+  enc_in: 150
+CalGeo-Weather-tmax:
+  <<: *calgeo_default
+  enc_in: 560
+CalGeo-Weather-tmin:
+  <<: *calgeo_default
+  enc_in: 560
+CalGeo-Weather-prcp:
+  <<: *calgeo_default
+  enc_in: 703
+  batch_size: 16
+
+# Mobility-CA (weekly, seq=16 pred=4, cycle=4 monthly)
+_mobility_default: &mobility_default
+  <<: *default
+  seq_len: 16
+  pred_len: 4
+  freq: 'W'
+  cycle_len: 4
+
+Mobility-CA-outdoor:
+  <<: *mobility_default
+  enc_in: 970
+Mobility-CA-essential:
+  <<: *mobility_default
+  enc_in: 6286
+  batch_size: 8
+Mobility-CA-indoor:
+  <<: *mobility_default
+  enc_in: 6427
+  batch_size: 8
+Mobility-CA-food:
+  <<: *mobility_default
+  enc_in: 8474
+  batch_size: 4
+
+# Generic catch-all for other datasets

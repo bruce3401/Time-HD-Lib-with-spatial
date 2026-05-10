@@ -5,6 +5,8 @@ from layers.Autoformer_EncDec import series_decomp
 from layers.Embed import DataEmbedding_wo_pos
 from layers.StandardNorm import Normalize
 
+from core.registry import register_model
+
 
 class DFT_series_decomp(nn.Module):
     """
@@ -184,6 +186,7 @@ class PastDecomposableMixing(nn.Module):
         return out_list
 
 
+@register_model("TimeMixer", paper="TimeMixer: A Decomposable Multiscale Mixing Architecture for Time Series Forecasting", year=2024)
 class Model(nn.Module):
 
     def __init__(self, configs):

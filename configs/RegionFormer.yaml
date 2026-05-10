@@ -1,0 +1,105 @@
+# RegionFormer config
+# Inherits LCA's tuned values; adds scale_mode + head_type + spatial-bias flags.
+
+_default: &default
+  train_epochs: 100
+  seq_len_factor: 4
+  learning_rate: 0.0005
+  d_model: 256
+  n_heads: 8
+  e_layers: 2
+  d_ff: 1024
+  dropout: 0.1
+  r_star: 16
+  gumbel_alpha: 0.15
+  patch_size: 14
+  patch_stride: 7
+  use_revin: true
+  lradj: type3
+  batch_size: 32
+  # RegionFormer-specific
+  scale_mode: soft           # {soft, grouped} — soft default; grouped TBD Phase 3.5
+  # Head: defaults to shared nn.Linear (mlp_head=False, indep_head=False) — matches SpatialLCA / PatchSTG / STAEformer convention
+  use_distance_anchor: true  # E1 (Tobler distance decay)
+  distance_alpha: 1.0
+  use_laplacian_smooth: true # E2 (graph Laplacian) — needs adjacency via set_spatial_metadata
+  laplacian_lambda: 0.05
+
+# Mobility-CA: weekly visits per tract; predict 4 weeks ahead from 16 weeks lookback.
+_mobility_default: &mobility_default
+  <<: *default
+  seq_len_factor: 4
+  patch_size: 4
+  patch_stride: 2
+  freq: 'W'
+  d_model: 256
+  e_layers: 2
+
+Mobility-CA-outdoor:
+  <<: *mobility_default
+  enc_in: 970
+  batch_size: 32
+
+Mobility-CA-essential:
+  <<: *mobility_default
+  enc_in: 6286
+  batch_size: 16
+
+Mobility-CA-indoor:
+  <<: *mobility_default
+  enc_in: 6427
+  batch_size: 16
+
+Mobility-CA-food:
+  <<: *mobility_default
+  enc_in: 8474
+  batch_size: 8
+
+# ----- CalGeo-Bench (v3) -----
+# enc_in is set provisionally; update after running prep scripts and counting
+# columns in <channel>_flow.csv. Daily resolution → seq_len/pred_len = 14.
+
+_calgeo_default: &calgeo_default
+  <<: *default
+  seq_len_factor: 1   # seq_len = pred_len = 14 days (default pred_len 14 below)
+  pred_len: 14
+  patch_size: 4
+  patch_stride: 2
+  freq: 'D'
+  d_model: 128
+  n_heads: 4
+  d_ff: 512
+  e_layers: 2
+
+# Air Quality — EPA AQS daily PM2.5 / Ozone (real station counts after prep)
+CalGeo-AirQuality-pm25:
+  <<: *calgeo_default
+  enc_in: 84       # actual after coverage ≥70% filter on 2018-2020
+  batch_size: 32
+
+CalGeo-AirQuality-ozone:
+  <<: *calgeo_default
+  enc_in: 156      # actual after coverage ≥70% filter on 2018-2020
+  batch_size: 32
+
+# Solar — NASA POWER daily GHI, 150 stratified CA points
+CalGeo-Solar-ghi:
+  <<: *calgeo_default
+  enc_in: 150
+  batch_size: 32
+
+# Weather — NOAA GHCN-D daily (real station counts after coverage ≥70% on 2018-2020)
+CalGeo-Weather-tmax:
+  <<: *calgeo_default
+  enc_in: 560
+  batch_size: 32
+
+CalGeo-Weather-tmin:
+  <<: *calgeo_default
+  enc_in: 560
+  batch_size: 32
+
+CalGeo-Weather-prcp:
+  <<: *calgeo_default
+  enc_in: 703
+  batch_size: 16   # higher N → smaller B

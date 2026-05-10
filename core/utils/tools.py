@@ -36,6 +36,11 @@ def adjust_learning_rate(optimizer, epoch, args, accelerator=None):
         lr_adjust = {epoch: args.learning_rate if epoch < 5 else args.learning_rate * 0.1}
     elif args.lradj == 'TST':
         lr_adjust = {epoch: args.learning_rate * (1.0 + 0.1 * epoch / args.train_epochs)}
+    elif args.lradj == 'cosine':
+        import math
+        lr_adjust = {epoch: args.learning_rate * 0.5 * (1.0 + math.cos(math.pi * (epoch - 1) / max(1, args.train_epochs - 1)))}
+    else:
+        lr_adjust = {}
     if epoch in lr_adjust.keys():
         lr = lr_adjust[epoch]
         for param_group in optimizer.param_groups:
@@ -88,12 +93,12 @@ class EarlyStopping:
             else:
                 print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
         
-        # Ensure checkpoints directory exists
-        checkpoints_dir = './checkpoints'
+        # Honour caller-supplied checkpoint dir (path = <args.checkpoints>/<setting>);
+        # only fall back to ./checkpoints when path has no directory component.
+        checkpoints_dir = os.path.dirname(path) or './checkpoints'
         if not os.path.exists(checkpoints_dir):
             os.makedirs(checkpoints_dir, exist_ok=True)
-        
-        # Extract experiment name from original path for filename
+
         experiment_name = os.path.basename(path)
         checkpoint_file = os.path.join(checkpoints_dir, f'{experiment_name}.pth')
 

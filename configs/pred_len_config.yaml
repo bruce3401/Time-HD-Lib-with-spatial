@@ -10,9 +10,20 @@ Atec: [336]
 Meter: [336]  # smart_meters_in_london
 Temp: [168]   # global_temp
 Wind: [168]   # global_wind
-Traffic-CA: [168]   # largest_ca
-Traffic-GLA: [168]  # largest_gla
-Traffic-GBA: [168]  # largest_gba
+
+# Mobility-CA (weekly tract visits, 2018-2025 = 418 weeks). Predict 4 weeks ahead.
+Mobility-CA-essential: [4]
+Mobility-CA-food: [4]
+Mobility-CA-indoor: [4]
+Mobility-CA-outdoor: [4]
+
+# CalGeo-Bench (daily, 2018-2020 = 1096 days). Predict 14 days ahead.
+CalGeo-AirQuality-pm25: [14]
+CalGeo-AirQuality-ozone: [14]
+CalGeo-Solar-ghi: [14]
+CalGeo-Weather-tmax: [14]
+CalGeo-Weather-tmin: [14]
+CalGeo-Weather-prcp: [14]
 "Air Quality": [28]  # chinese_air_quality
 SIRS: [7]     # sirs
 SP500: [7]    # sp500

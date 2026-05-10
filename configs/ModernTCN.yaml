@@ -92,3 +92,95 @@ Wiki-20k:
   enc_in: 20000
   train_epochs: 10
   dropout: 0.9
+
+# --- CalGeo-Bench (added v3, daily) ---
+CalGeo-AirQuality-pm25:
+  enc_in: 84
+  seq_len: 14
+  pred_len: 14
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; daily data faked as hourly
+  batch_size: 32
+  learning_rate: 0.0001
+  train_epochs: 50
+
+CalGeo-AirQuality-ozone:
+  enc_in: 156
+  seq_len: 14
+  pred_len: 14
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; daily data faked as hourly
+  batch_size: 32
+  learning_rate: 0.0001
+  train_epochs: 50
+
+CalGeo-Solar-ghi:
+  enc_in: 150
+  seq_len: 14
+  pred_len: 14
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; daily data faked as hourly
+  batch_size: 32
+  learning_rate: 0.0001
+  train_epochs: 50
+
+CalGeo-Weather-tmax:
+  enc_in: 560
+  seq_len: 14
+  pred_len: 14
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; daily data faked as hourly
+  batch_size: 32
+  learning_rate: 0.0001
+  train_epochs: 50
+
+CalGeo-Weather-tmin:
+  enc_in: 560
+  seq_len: 14
+  pred_len: 14
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; daily data faked as hourly
+  batch_size: 32
+  learning_rate: 0.0001
+  train_epochs: 50
+
+CalGeo-Weather-prcp:
+  enc_in: 703
+  seq_len: 14
+  pred_len: 14
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; daily data faked as hourly
+  batch_size: 16
+  learning_rate: 0.0001
+  train_epochs: 50
+
+# --- Mobility-CA (weekly) ---
+Mobility-CA-outdoor:
+  enc_in: 970
+  seq_len: 16
+  pred_len: 4
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; weekly data faked as hourly
+  batch_size: 32
+  learning_rate: 0.0001
+  train_epochs: 50
+
+Mobility-CA-essential:
+  enc_in: 6286
+  seq_len: 16
+  pred_len: 4
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; weekly data faked as hourly
+  batch_size: 8
+  learning_rate: 0.0001
+  train_epochs: 50
+
+Mobility-CA-indoor:
+  enc_in: 6427
+  seq_len: 16
+  pred_len: 4
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; weekly data faked as hourly
+  batch_size: 8
+  learning_rate: 0.0001
+  train_epochs: 50
+
+Mobility-CA-food:
+  enc_in: 8474
+  seq_len: 16
+  pred_len: 4
+  freq: 'h'  # ModernTCN hardcodes time_feature_num for {h,t}; weekly data faked as hourly
+  batch_size: 4
+  learning_rate: 0.0001
+  train_epochs: 50

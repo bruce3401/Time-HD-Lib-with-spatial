@@ -27,45 +27,30 @@ class ModelManager:
     def _ensure_models_loaded(self):
         """
         Ensure all available models are loaded and registered.
-        
-        Imports all model modules to trigger their @register_model decorators,
-        making them available through the registry system.
+
+        Each import is wrapped in its own try/except so that one missing module
+        does not abort the rest. This keeps the registry populated with whatever
+        is actually present on disk in this fork (CalST-Bench / IJGIS subset +
+        DCRNN spatial baseline).
         """
-        try:
-            # Import legacy models to register them
-            import models.UCast  # Triggers @register_model decorator
-            import models.DLinear
-            import models.TimesNet
-            
-            # Import Transformer-based models (2017-2021)
-            import models.Autoformer
-            import models.Informer
-            import models.FEDformer
-            import models.PatchTST
-            import models.iTransformer
-            import models.Transformer
-            import models.Nonstationary_Transformer
-            import models.ETSformer
-            import models.Crossformer
-            import models.Pyraformer
-            
-            # Import CNN-based models
-            import models.ModernTCN
-            import models.MICN
-            
-            # Import RNN-based and specialized models
-            import models.TiDE
-            import models.SegRNN
-            import models.LightTS
-            
-            # Import MLP-based and frequency-domain models
-            import models.TSMixer
-            import models.FreTS
-            
-            # Future model imports can be added here
-            
-        except ImportError as e:
-            print(f"Warning: Failed to import some models - they may not be available: {e}")
+        modules = [
+            "models.DLinear",
+            "models.PatchTST",
+            "models.iTransformer",
+            "models.ModernTCN",
+            "models.TSMixer",
+            "models.TimeMixer",
+            "models.SpatialLCA",
+            "models.RegionFormer",
+            "models.CycleNet",
+            "models.DCRNN",
+        ]
+        import importlib
+        for mod_name in modules:
+            try:
+                importlib.import_module(mod_name)
+            except ImportError as e:
+                print(f"Warning: failed to import {mod_name}: {e}")
     
     def create_model(self, model_name: str, config: BaseConfig) -> nn.Module:
         """

@@ -1,3 +1,6 @@
+# Time-HD-Lib-with-spatial
+This is a fork extending Time-HD-Lib toward **spatio-temporal** high-dimensional data and models — spatial structure matters as much as the temporal axis, and this library focuses on jointly modeling both.
+
 <p align="center">
 <img src="./pic/Logo.png" height = "100" alt="" align=center />
 </p>

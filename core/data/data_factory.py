@@ -1,4 +1,6 @@
 from .data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom
+from .mobility_ca import Dataset_MobilityCA
+from .calgeo import Dataset_CalGeo
 from torch.utils.data import DataLoader
 
 data_dict = {
@@ -6,6 +8,17 @@ data_dict = {
     'ETTh2': Dataset_ETT_hour,
     'ETTm1': Dataset_ETT_minute,
     'ETTm2': Dataset_ETT_minute,
+    'Mobility-CA-essential': Dataset_MobilityCA,
+    'Mobility-CA-food':      Dataset_MobilityCA,
+    'Mobility-CA-indoor':    Dataset_MobilityCA,
+    'Mobility-CA-outdoor':   Dataset_MobilityCA,
+    # CalGeo-Bench (v3) — 3 new domains × multiple channels
+    'CalGeo-AirQuality-pm25':  Dataset_CalGeo,
+    'CalGeo-AirQuality-ozone': Dataset_CalGeo,
+    'CalGeo-Solar-ghi':        Dataset_CalGeo,
+    'CalGeo-Weather-tmax':     Dataset_CalGeo,
+    'CalGeo-Weather-tmin':     Dataset_CalGeo,
+    'CalGeo-Weather-prcp':     Dataset_CalGeo,
     'custom': Dataset_Custom
 }
 

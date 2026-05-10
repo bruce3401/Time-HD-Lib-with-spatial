@@ -180,10 +180,13 @@ class ExperimentRunner:
         data = getattr(self.config, 'data', 'data').replace(' ', '_')  # Handle spaces in dataset names
         seq_len = getattr(self.config, 'seq_len', 96)
         pred_len = getattr(self.config, 'pred_len', 96)
-        
-        # Use simplified format to keep paths manageable
-        setting = f"{task}_{model}_{data}_sl{seq_len}_pl{pred_len}"
-        
+        des = getattr(self.config, 'des', 'Exp')
+        seed = getattr(self.config, 'seed', 2021)
+
+        # Include des + seed so concurrent ablation runs (e.g. baseline vs +E2)
+        # don't collide on the same checkpoint path.
+        setting = f"{task}_{model}_{data}_sl{seq_len}_pl{pred_len}_{des}_s{seed}"
+
         return setting
 
 

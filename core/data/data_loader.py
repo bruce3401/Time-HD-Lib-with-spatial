@@ -41,9 +41,12 @@ class Dataset_Custom(Dataset):
     def __read_data__(self):
         self.scaler = StandardScaler()
 
-        dict_raw = load_dataset("Time-HD-Anonymous/High_Dimensional_Time_Series", self.args.data, cache_dir="dataset")
-        
-        df_raw = dict_raw['train'].to_pandas()
+        local_csv = os.path.join(self.root_path, self.data_path) if self.data_path else None
+        if local_csv and os.path.exists(local_csv):
+            df_raw = pd.read_csv(local_csv)
+        else:
+            dict_raw = load_dataset("Time-HD-Anonymous/High_Dimensional_Time_Series", self.args.data, cache_dir="dataset")
+            df_raw = dict_raw['train'].to_pandas()
         '''
         df_raw.columns: ['date', ...(other features), target feature]
         '''

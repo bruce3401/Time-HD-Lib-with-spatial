@@ -400,9 +400,110 @@ class FreTSConfig(ModelConfig):
             raise ValueError("sparsity_threshold must be non-negative")
 
 
+@dataclass
+class SpatialLCAConfig(ModelConfig):
+    """Configuration for SpatialLCA (LCA attention) model."""
+
+    # LCA core
+    r_star: int = 16
+    gumbel_alpha: float = 0.15
+
+    # Inverted patch embedding
+    patch_size: int = 14
+    patch_stride: int = 7
+    use_time_enc: bool = False
+    keep_patches: bool = False
+
+    # Attention variant: 'lca' | 'full' | 'linformer'
+    attn: str = 'lca'
+    backbone: str = 'lca'  # 'lca' | 'mixer'
+    linformer_k: int = 64
+
+    # Optional MLP-Mixer auxiliary branch
+    use_mixer_aux: bool = False
+    mixer_hidden: int = 256
+    mixer_blocks: int = 2
+
+    # Normalization toggles
+    use_revin: bool = False
+    revin_no_affine: bool = False
+    use_dishts: bool = False
+    subtract_last: bool = False
+
+    # Series decomposition (DLinear-style)
+    use_decomp: bool = False
+    decomp_kernel: int = 25
+
+    # Heads
+    mlp_head: bool = False
+    indep_head: bool = False
+    head_hidden_ratio: int = 1
+
+    # Memory / throughput knobs
+    grad_ckpt: bool = False
+    channel_chunk: int = 0
+
+    # Spatial extension E2 — Laplacian smoothing on centroid assignment
+    use_laplacian_smooth: bool = False
+    laplacian_lambda: float = 0.01
+
+    # Spatial extension E1 — anchored centroids with distance-decay assignment
+    use_distance_anchor: bool = False
+    distance_alpha: float = 1.0
+
+    # Spatial extension E3-lite — admin-seeded K-means init for anchors
+    use_admin_init: bool = False
+
+    # Spatial extension E4 — graph propagation residual using road adjacency
+    use_graph_prop: bool = False
+    graph_prop_layers: int = 1
+    graph_prop_position: str = "pre"
+    use_gcn_branch: bool = False
+    gcn_layers: int = 2
+
+    # raw-flow test metrics (inverse-transform + zero-mask)
+    report_raw_metrics: bool = False
+    mask_value: float = 1e-3
+
+    # ModelConfig defaults that fit ScaleX better
+    d_model: int = 256
+    n_heads: int = 8
+    e_layers: int = 2
+    d_ff: int = 1024
+
+    def validate(self):
+        super().validate()
+        if self.r_star <= 0:
+            raise ValueError("r_star must be positive")
+        if self.patch_size <= 0:
+            raise ValueError("patch_size must be positive")
+        if self.patch_stride <= 0:
+            raise ValueError("patch_stride must be positive")
+        if self.attn not in ('lca', 'full', 'linformer'):
+            raise ValueError("attn must be one of: lca, full, linformer")
+        if self.backbone not in ('lca', 'mixer'):
+            raise ValueError("backbone must be one of: lca, mixer")
+
+
+@dataclass
+class DCRNNConfig(ModelConfig):
+    """Configuration for the DCRNN spatial baseline (Li et al. ICLR 2018)."""
+
+    # Canonical defaults from the original paper.
+    d_model: int = 64           # hidden dimension per node
+    e_layers: int = 2           # encoder/decoder DCGRU layer count
+    diffusion_K: int = 2        # number of diffusion steps per DConv
+
+    def validate(self):
+        super().validate()
+        if self.diffusion_K <= 0:
+            raise ValueError("diffusion_K must be positive")
+
+
 # Model configuration factory
 MODEL_CONFIGS = {
     'UCast': UCastConfig,
+    'SpatialLCA': SpatialLCAConfig,
     'DLinear': DLinearConfig,
     'TimesNet': TimesNetConfig,
     'Autoformer': AutoformerConfig,
@@ -422,6 +523,7 @@ MODEL_CONFIGS = {
     'LightTS': LightTSConfig,
     'TSMixer': TSMixerConfig,
     'FreTS': FreTSConfig,
+    'DCRNN': DCRNNConfig,
     # Add more model configs as needed
 }
 
